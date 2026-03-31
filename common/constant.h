@@ -13,3 +13,6 @@
 #define BG_COLOR		CLITERAL(Color){ 31, 31, 31, 255 }
 #define STRUCT_COLOR	CLITERAL(Color){ 56, 76, 113, 255 }
 #define DARKRED			CLITERAL(Color){ 156, 17, 24, 255 }
+
+#define ITERATIONS		10000
+#define MCTS_C			1.414

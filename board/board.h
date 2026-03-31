@@ -2,15 +2,19 @@
 #include "common/constant.h"
 #include "common/utils.h"
 
+using namespace std;
+
 
 class Board {
 public:
-	int board[7][6];
+	int board[COLUMNS][ROWS];
+	int player;
+	int lastMove;
 
 	Board() {}
 	~Board() {}
 
-	void init(bool random = false) {
+	void init(const bool random = false) {
 		for (int x = 0; x < COLUMNS; x++) {
 			for (int y = 0; y < ROWS; y++) {
 				if (random) {
@@ -20,6 +24,118 @@ public:
 				}
 			}
 		}
+
+		player = 1;
+		lastMove = -1;
+	}
+
+	void makeMove(const int col) {
+		int* column = board[col];
+
+		for (int y = ROWS - 1; y >= 0; y--) {
+			if (column[y] == 0) {
+				column[y] = player;
+				break;
+			}
+		}
+
+		player = -player;
+		lastMove = col;
+	}
+
+	void undoMove() {
+		if (lastMove == -1) {
+			throw runtime_error("error undoing move");
+		}
+
+		int* column = board[lastMove];
+
+		for (int y = 0; y < ROWS; y++) {
+			if (column[y] != 0) {
+				column[y] = 0;
+				break;
+			}
+		}
+
+		player = -player;
+		lastMove = -1;
+	}
+
+	bool isValidMove(const int col) const {
+		return board[col][0] == 0;
+	}
+
+	bool isFull() const {
+		for (int x = 0; x < COLUMNS; x++) {
+			if (board[x][0] == 0) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	int checkWin() const {
+		for (int player = -1; player < 2; player += 2) {
+			for (int x = 0; x < COLUMNS; x++) {
+				if (checkColumnWin(x, player)) {
+					return player;
+				}
+			}
+
+			for (int y = 0; y < ROWS; y++) {
+				if (checkRowWin(y, player)) {
+					return player;
+				}
+			}
+
+			for (int x = 0; x < COLUMNS - 3; x++) {
+				if (checkMainDiagWin(x, player)) {
+					return player;
+				}
+			}
+
+			for (int x = 0; x < COLUMNS - 3; x++) {
+				if (checkAntiDiagWin(x, player)) {
+					return player;
+				}
+			}
+		}
+
+		return 0;
+	}
+
+	bool checkColumnWin(const int colId, const int player) const {
+		return	(board[colId][0] == player && board[colId][1] == player && board[colId][2] == player && board[colId][3] == player) ||
+				(board[colId][1] == player && board[colId][2] == player && board[colId][3] == player && board[colId][4] == player) ||
+				(board[colId][2] == player && board[colId][3] == player && board[colId][4] == player && board[colId][5] == player);
+	}
+
+	bool checkRowWin(const int rowId, const int player) const {
+		return	(board[0][rowId] == player && board[1][rowId] == player && board[2][rowId] == player && board[3][rowId] == player) ||
+				(board[1][rowId] == player && board[2][rowId] == player && board[3][rowId] == player && board[4][rowId] == player) ||
+				(board[2][rowId] == player && board[3][rowId] == player && board[4][rowId] == player && board[5][rowId] == player) ||
+				(board[3][rowId] == player && board[4][rowId] == player && board[5][rowId] == player && board[6][rowId] == player);
+	}
+
+	bool checkMainDiagWin(const int colId, const int player) const {
+		return	(board[colId][0] == player && board[colId + 1][1] == player && board[colId + 2][2] == player && board[colId + 3][3] == player) ||
+				(board[colId][1] == player && board[colId + 1][2] == player && board[colId + 2][3] == player && board[colId + 3][4] == player) ||
+				(board[colId][2] == player && board[colId + 1][3] == player && board[colId + 2][4] == player && board[colId + 3][5] == player);
+	}
+
+	bool checkAntiDiagWin(const int colId, const int player) const {
+		return	(board[colId][3] == player && board[colId + 1][2] == player && board[colId + 2][1] == player && board[colId + 3][0] == player) ||
+				(board[colId][4] == player && board[colId + 1][3] == player && board[colId + 2][2] == player && board[colId + 3][1] == player) ||
+				(board[colId][5] == player && board[colId + 1][4] == player && board[colId + 2][3] == player && board[colId + 3][2] == player);
+	}
+
+	int randomDisc() {
+		const double value = random(0, 3);
+
+		if (value < 1.0) return -1;
+		if (value > 2.0) return 1;
+		return 0;
 	}
 
 	void draw() {
@@ -38,90 +154,6 @@ public:
 		case -1: return DARKRED;
 		default: return BG_COLOR;
 		}
-	}
-
-	int putDisc(const int colId, const int color) {
-		int* column = board[colId];
-
-		for (int y = ROWS - 1; y >= 0; y--) {
-			if (column[y] == 0) {
-				column[y] = color;
-				return y;
-			}
-		}
-
-		return -1;
-	}
-
-	bool checkEnd() {
-		for (int x = 0; x < COLUMNS; x++) {
-			if (board[x][0] == 0) {
-				return false;
-			}
-		}
-
-		return true;
-	}
-
-	bool checkColumnWin(const int colId, const int color) const {
-		return	(board[colId][0] == color && board[colId][1] == color && board[colId][2] == color && board[colId][3] == color) ||
-				(board[colId][1] == color && board[colId][2] == color && board[colId][3] == color && board[colId][4] == color) ||
-				(board[colId][2] == color && board[colId][3] == color && board[colId][4] == color && board[colId][5] == color);
-	}
-
-	bool checkRowWin(const int rowId, const int color) const {
-		return	(board[0][rowId] == color && board[1][rowId] == color && board[2][rowId] == color && board[3][rowId] == color) ||
-				(board[1][rowId] == color && board[2][rowId] == color && board[3][rowId] == color && board[4][rowId] == color) ||
-				(board[2][rowId] == color && board[3][rowId] == color && board[4][rowId] == color && board[5][rowId] == color) ||
-				(board[3][rowId] == color && board[4][rowId] == color && board[5][rowId] == color && board[6][rowId] == color);
-	}
-
-	bool checkMainDiagWin(const int colId, const int color) const {
-		return	(board[colId][0] == color && board[colId + 1][1] == color && board[colId + 2][2] == color && board[colId + 3][3] == color) ||
-				(board[colId][1] == color && board[colId + 1][2] == color && board[colId + 2][3] == color && board[colId + 3][4] == color) ||
-				(board[colId][2] == color && board[colId + 1][3] == color && board[colId + 2][4] == color && board[colId + 3][5] == color);
-	}
-
-	bool checkAntiDiagWin(const int colId, const int color) const {
-		return	(board[colId][3] == color && board[colId + 1][2] == color && board[colId + 2][1] == color && board[colId + 3][0] == color) ||
-				(board[colId][4] == color && board[colId + 1][3] == color && board[colId + 2][2] == color && board[colId + 3][1] == color) ||
-				(board[colId][5] == color && board[colId + 1][4] == color && board[colId + 2][3] == color && board[colId + 3][2] == color);
-	}
-
-	bool checkWin(const int color) const {
-		for (int x = 0; x < COLUMNS; x++) {
-			if (checkColumnWin(x, color)) {
-				return true;
-			}
-		}
-
-		for (int y = 0; y < ROWS; y++) {
-			if (checkRowWin(y, color)) {
-				return true;
-			}
-		}
-
-		for (int x = 0; x < COLUMNS - 3; x++) {
-			if (checkMainDiagWin(x, color)) {
-				return true;
-			}
-		}
-
-		for (int x = 0; x < COLUMNS - 3; x++) {
-			if (checkAntiDiagWin(x, color)) {
-				return true;
-			}
-		}
-
-		return false;
-	}
-
-	int randomDisc() {
-		const double value = random(0, 3);
-
-		if (value < 1.0) return -1;
-		if (value > 2.0) return 1;
-		return 0;
 	}
 
 };

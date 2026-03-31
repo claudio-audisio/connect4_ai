@@ -1,0 +1,23 @@
+Upper Confidence Bound 1
+It's the formula used in the Selection step of MCTS to decide which child node to explore next. It balances two competing goals:
+
+Exploitation — pick nodes that have performed well so far
+Exploration — pick nodes that haven't been visited much yet
+
+The formula is:
+UCB1 = (w / n) + C × √(ln(N) / n)
+Where:
+
+w — number of wins (or total score) from this node
+n — number of times this node has been visited
+N — number of times the parent node has been visited
+C — exploration constant (typically √2), tunable
+
+How it works:
+
+The left term w/n rewards nodes with high win rates (exploitation)
+The right term rewards nodes visited rarely relative to the parent (exploration)
+The algorithm always picks the child with the highest UCB1 score
+
+As a node gets visited more, its uncertainty shrinks and the exploration bonus decreases — naturally shifting focus toward promising moves over time.
+It was originally introduced by Auer, Cesa-Bianchi, and Fischer in 2002 in the context of the multi-armed bandit problem, and was later adapted for tree search in MCTS.
