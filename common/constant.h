@@ -1,6 +1,5 @@
 #pragma once
 
-
 #define FPS				60
 
 #define WINDOW_WIDTH	1400
@@ -14,5 +13,7 @@
 #define STRUCT_COLOR	CLITERAL(Color){ 56, 76, 113, 255 }
 #define DARKRED			CLITERAL(Color){ 156, 17, 24, 255 }
 
-#define ITERATIONS		10000
-#define MCTS_C			1.414
+#define ITERATIONS		800
+#define MCTS_C_UCB1		1.414
+#define MCTS_C_PUCT		1.25
+#define BEST_MOVE_THS	10

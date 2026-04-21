@@ -1,18 +1,21 @@
+#define CNN_USE_OMP
+
 #include <iostream>
 #include <ostream>
-#include <raylib.h>
-#include <thread>
 
 #include "agent/mcts.h"
 #include "board/board.h"
 #include "common/constant.h"
 
+#include <raylib.h>
+#include <thread>
+
 using namespace std;
 
-
+Agent agent;
 Board board;
-MCTS mctsOne(ITERATIONS, MCTS_C, randomInt(0, 100));
-MCTS mctsMinusOne(ITERATIONS, MCTS_C, randomInt(0, 100));
+MCTS mctsOne(&agent, ITERATIONS, MCTS_C_PUCT, randomInt(0, 100));
+MCTS mctsMinusOne(&agent, ITERATIONS, MCTS_C_PUCT, randomInt(0, 100));
 int draws = 0;
 int winOne = 0;
 int winMinusOne = 0;
@@ -22,6 +25,7 @@ void init() {
 	SetWindowState(FLAG_WINDOW_ALWAYS_RUN);
 	SetTargetFPS(FPS);
 	board.init();
+	agent.init();
 }
 
 int randomMove() {

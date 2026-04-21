@@ -1,4 +1,5 @@
 #pragma once
+#include <raylib.h>
 #include "common/constant.h"
 #include "common/utils.h"
 
@@ -10,6 +11,7 @@ public:
 	int board[COLUMNS][ROWS];
 	int player;
 	int lastMove;
+	int moveCounter;
 
 	Board() {}
 	~Board() {}
@@ -27,6 +29,7 @@ public:
 
 		player = 1;
 		lastMove = -1;
+		moveCounter = 0;
 	}
 
 	void makeMove(const int col) {
@@ -41,6 +44,7 @@ public:
 
 		player = -player;
 		lastMove = col;
+		moveCounter++;
 	}
 
 	void undoMove() {
@@ -59,6 +63,7 @@ public:
 
 		player = -player;
 		lastMove = -1;
+		moveCounter--;
 	}
 
 	bool isValidMove(const int col) const {
@@ -130,7 +135,7 @@ public:
 				(board[colId][5] == player && board[colId + 1][4] == player && board[colId + 2][3] == player && board[colId + 3][2] == player);
 	}
 
-	int randomDisc() {
+	static int randomDisc() {
 		const double value = random(0, 3);
 
 		if (value < 1.0) return -1;
@@ -148,7 +153,7 @@ public:
 		}
 	}
 
-	Color getCircleColor(const int value) {
+	static Color getCircleColor(const int value) {
 		switch (value) {
 		case 1: return GOLD;
 		case -1: return DARKRED;
