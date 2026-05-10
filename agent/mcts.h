@@ -198,7 +198,7 @@ private:
     }
 
 	static int sampleFromDistribution(const vector<float>& visits, const int totalVisits) {
-    	const double rnd = random(0, 1) * static_cast<double>(totalVisits);
+    	const double rnd = cl::random(0, 1) * static_cast<double>(totalVisits);
     	double sum = 0;
 
     	for (int i = 0; i < visits.size(); ++i) {

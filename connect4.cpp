@@ -6,6 +6,7 @@
 #include "agent/mcts.h"
 #include "board/board.h"
 #include "common/constant.h"
+#include "cl_random.h"
 
 #include <raylib.h>
 #include <thread>
@@ -14,8 +15,8 @@ using namespace std;
 
 Agent agent;
 Board board;
-MCTS mctsOne(&agent, ITERATIONS, MCTS_C_PUCT, randomInt(0, 100));
-MCTS mctsMinusOne(&agent, ITERATIONS, MCTS_C_PUCT, randomInt(0, 100));
+MCTS mctsOne(&agent, ITERATIONS, MCTS_C_PUCT, cl::randomInt(0, 100));
+MCTS mctsMinusOne(&agent, ITERATIONS, MCTS_C_PUCT, cl::randomInt(0, 100));
 int draws = 0;
 int winOne = 0;
 int winMinusOne = 0;
@@ -29,10 +30,10 @@ void init() {
 }
 
 int randomMove() {
-	int move = randomInt(0, 6);
+	int move = cl::randomInt(0, 6);
 
 	while (!board.isValidMove(move)) {
-		move = randomInt(0, 6);
+		move = cl::randomInt(0, 6);
 	}
 
 	return move;

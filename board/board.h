@@ -1,7 +1,8 @@
 #pragma once
 #include <raylib.h>
+
+#include "cl_random.h"
 #include "common/constant.h"
-#include "common/utils.h"
 
 using namespace std;
 
@@ -136,7 +137,7 @@ public:
 	}
 
 	static int randomDisc() {
-		const double value = random(0, 3);
+		const double value = cl::random(0, 3);
 
 		if (value < 1.0) return -1;
 		if (value > 2.0) return 1;

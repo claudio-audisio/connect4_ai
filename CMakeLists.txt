@@ -7,11 +7,14 @@ set(CMAKE_CXX_STANDARD_REQUIRED True)
 set(CMAKE_CXX_FLAGS_DEBUG "-O0 -g -pthread")
 set(CMAKE_CXX_FLAGS_RELEASE "-O3 -march=native -flto=auto -DNDEBUG -fopenmp -pthread")
 
+add_subdirectory(../claLib ${CMAKE_BINARY_DIR}/claLib)
+
 add_library(connect4Lib INTERFACE)
 target_include_directories(connect4Lib INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
 target_include_directories(connect4Lib INTERFACE ../tiny-dnn)
 
 add_executable(connect4_ai connect4.cpp)
 
+target_link_libraries(connect4_ai PRIVATE claLib)
 target_link_libraries(connect4_ai PRIVATE -lraylib -lGL -lm -lpthread -ldl -lrt -lX11 -fopenmp)
 target_link_libraries(connect4_ai PRIVATE connect4Lib)
