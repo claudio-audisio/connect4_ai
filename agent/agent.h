@@ -12,9 +12,7 @@ class Agent {
 	mt19937 rng;
 
 public:
-	Agent() {}
-
-	void init() {
+	Agent() : rng(random_device{}()) {
 		initPolicyNet();
 		initValueNet();
 	}

@@ -15,8 +15,8 @@ using namespace std;
 
 Agent agent;
 Board board;
-MCTS mctsOne(&agent, ITERATIONS, MCTS_C_PUCT, cl::randomInt(0, 100));
-MCTS mctsMinusOne(&agent, ITERATIONS, MCTS_C_PUCT, cl::randomInt(0, 100));
+MCTS mctsOne(&agent, ITERATIONS, MCTS_C_PUCT);
+MCTS mctsMinusOne(&agent, ITERATIONS, MCTS_C_PUCT);
 int draws = 0;
 int winOne = 0;
 int winMinusOne = 0;
@@ -25,8 +25,6 @@ void init() {
 	InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "connect4");
 	SetWindowState(FLAG_WINDOW_ALWAYS_RUN);
 	SetTargetFPS(FPS);
-	board.init();
-	agent.init();
 }
 
 int randomMove() {
@@ -66,10 +64,8 @@ int main() {
 
 		EndDrawing();
 
-		const int winner = board.checkWin();
-
-		if (winner != 0) {
-			putWinner(winner);
+		if (board.checkWin(-board.player)) {
+			putWinner(-board.player);
 			printWinners();
 			board.init();
 			//this_thread::sleep_for(chrono::seconds(5));

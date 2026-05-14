@@ -23,7 +23,7 @@ struct mctsNode {
 	}
 
 	bool isTerminal() const {
-		return board.checkWin() != 0 || board.isFull();
+		return board.checkWin(-board.player) || board.isFull();
 	}
 
 	bool isToExpand() const {
@@ -68,7 +68,7 @@ class MCTS {
 	float C;
 
 public:
-	explicit MCTS(Agent* agent, const int iterations = ITERATIONS, const float C = MCTS_C_PUCT, const unsigned seed = 42)
+	explicit MCTS(Agent* agent, const int iterations = ITERATIONS, const float C = MCTS_C_PUCT)
 		: agent(agent), iterations(iterations), C(C) {
 	}
 
@@ -134,11 +134,8 @@ private:
     // ── 3. SIMULATION (rollout) ────────────────────────────────────────────
     float simulate(const Board& board) const {
     	// check for immediate terminal first
-    	const int winner = board.checkWin();
-
-    	if (winner != 0) {
-    		const int rootPlayer = -board.player;
-    		return (winner == rootPlayer) ? 1.0f : 0.0f;
+    	if (board.checkWin(-board.player)) {
+    		return 0.0f;
     	}
 
     	if (board.isFull()) {
@@ -173,13 +170,8 @@ private:
     		// greedy — pick most visited (what you do now)
     		return mostVisitedChild(root);
     	}
-    	// sample proportional to visit counts
-    	std::vector<float> visits;
-    	for (const auto& child : root->children) {
-    		visits.push_back(static_cast<float>(child->visits));
-    	}
 
-    	return sampleFromDistribution(visits, root->visits);
+    	return sampleFromDistribution(root);
     }
 
 	static int mostVisitedChild(const mctsNode* root) {
@@ -197,22 +189,22 @@ private:
     	return best ? best->move : 0;
     }
 
-	static int sampleFromDistribution(const vector<float>& visits, const int totalVisits) {
-    	const double rnd = cl::random(0, 1) * static_cast<double>(totalVisits);
+	static int sampleFromDistribution(const mctsNode* root) {
+    	const double rnd = cl::random(0, 1) * static_cast<double>(root->visits);
     	double sum = 0;
 
-    	for (int i = 0; i < visits.size(); ++i) {
-    		sum += visits[i];
+    	for (const auto& child : root->children) {
+    		sum += child->visits;
 
     		if (rnd < sum) {
-    			return i;
+    			return child->move;
     		}
     	}
 
     	// fallback
-    	for (int i = 0; i < visits.size(); ++i) {
-    		if (visits[i] > 0.0f) {
-    			return i;
+    	for (const auto& child : root->children) {
+    		if (child->visits > 0) {
+    			return child->move;
     		}
     	}
 

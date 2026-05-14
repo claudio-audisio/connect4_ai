@@ -14,7 +14,10 @@ public:
 	int lastMove;
 	int moveCounter;
 
-	Board() {}
+	Board() {
+		init();
+	}
+
 	~Board() {}
 
 	void init(const bool random = false) {
@@ -81,59 +84,57 @@ public:
 		return true;
 	}
 
-	int checkWin() const {
-		for (int player = -1; player < 2; player += 2) {
-			for (int x = 0; x < COLUMNS; x++) {
-				if (checkColumnWin(x, player)) {
-					return player;
-				}
-			}
-
-			for (int y = 0; y < ROWS; y++) {
-				if (checkRowWin(y, player)) {
-					return player;
-				}
-			}
-
-			for (int x = 0; x < COLUMNS - 3; x++) {
-				if (checkMainDiagWin(x, player)) {
-					return player;
-				}
-			}
-
-			for (int x = 0; x < COLUMNS - 3; x++) {
-				if (checkAntiDiagWin(x, player)) {
-					return player;
-				}
+	bool checkWin(const int lastPlayer) const {
+		for (int x = 0; x < COLUMNS; x++) {
+			if (checkColumnWin(x, lastPlayer)) {
+				return true;
 			}
 		}
 
-		return 0;
+		for (int y = 0; y < ROWS; y++) {
+			if (checkRowWin(y, lastPlayer)) {
+				return true;
+			}
+		}
+
+		for (int x = 0; x < COLUMNS - 3; x++) {
+			if (checkMainDiagWin(x, lastPlayer)) {
+				return true;
+			}
+		}
+
+		for (int x = 0; x < COLUMNS - 3; x++) {
+			if (checkAntiDiagWin(x, lastPlayer)) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
-	bool checkColumnWin(const int colId, const int player) const {
-		return	(board[colId][0] == player && board[colId][1] == player && board[colId][2] == player && board[colId][3] == player) ||
-				(board[colId][1] == player && board[colId][2] == player && board[colId][3] == player && board[colId][4] == player) ||
-				(board[colId][2] == player && board[colId][3] == player && board[colId][4] == player && board[colId][5] == player);
+	bool checkColumnWin(const int colId, const int lastPlayer) const {
+		return	(board[colId][0] == lastPlayer && board[colId][1] == lastPlayer && board[colId][2] == lastPlayer && board[colId][3] == lastPlayer) ||
+				(board[colId][1] == lastPlayer && board[colId][2] == lastPlayer && board[colId][3] == lastPlayer && board[colId][4] == lastPlayer) ||
+				(board[colId][2] == lastPlayer && board[colId][3] == lastPlayer && board[colId][4] == lastPlayer && board[colId][5] == lastPlayer);
 	}
 
-	bool checkRowWin(const int rowId, const int player) const {
-		return	(board[0][rowId] == player && board[1][rowId] == player && board[2][rowId] == player && board[3][rowId] == player) ||
-				(board[1][rowId] == player && board[2][rowId] == player && board[3][rowId] == player && board[4][rowId] == player) ||
-				(board[2][rowId] == player && board[3][rowId] == player && board[4][rowId] == player && board[5][rowId] == player) ||
-				(board[3][rowId] == player && board[4][rowId] == player && board[5][rowId] == player && board[6][rowId] == player);
+	bool checkRowWin(const int rowId, const int lastPlayer) const {
+		return	(board[0][rowId] == lastPlayer && board[1][rowId] == lastPlayer && board[2][rowId] == lastPlayer && board[3][rowId] == lastPlayer) ||
+				(board[1][rowId] == lastPlayer && board[2][rowId] == lastPlayer && board[3][rowId] == lastPlayer && board[4][rowId] == lastPlayer) ||
+				(board[2][rowId] == lastPlayer && board[3][rowId] == lastPlayer && board[4][rowId] == lastPlayer && board[5][rowId] == lastPlayer) ||
+				(board[3][rowId] == lastPlayer && board[4][rowId] == lastPlayer && board[5][rowId] == lastPlayer && board[6][rowId] == lastPlayer);
 	}
 
-	bool checkMainDiagWin(const int colId, const int player) const {
-		return	(board[colId][0] == player && board[colId + 1][1] == player && board[colId + 2][2] == player && board[colId + 3][3] == player) ||
-				(board[colId][1] == player && board[colId + 1][2] == player && board[colId + 2][3] == player && board[colId + 3][4] == player) ||
-				(board[colId][2] == player && board[colId + 1][3] == player && board[colId + 2][4] == player && board[colId + 3][5] == player);
+	bool checkMainDiagWin(const int colId, const int lastPlayer) const {
+		return	(board[colId][0] == lastPlayer && board[colId + 1][1] == lastPlayer && board[colId + 2][2] == lastPlayer && board[colId + 3][3] == lastPlayer) ||
+				(board[colId][1] == lastPlayer && board[colId + 1][2] == lastPlayer && board[colId + 2][3] == lastPlayer && board[colId + 3][4] == lastPlayer) ||
+				(board[colId][2] == lastPlayer && board[colId + 1][3] == lastPlayer && board[colId + 2][4] == lastPlayer && board[colId + 3][5] == lastPlayer);
 	}
 
-	bool checkAntiDiagWin(const int colId, const int player) const {
-		return	(board[colId][3] == player && board[colId + 1][2] == player && board[colId + 2][1] == player && board[colId + 3][0] == player) ||
-				(board[colId][4] == player && board[colId + 1][3] == player && board[colId + 2][2] == player && board[colId + 3][1] == player) ||
-				(board[colId][5] == player && board[colId + 1][4] == player && board[colId + 2][3] == player && board[colId + 3][2] == player);
+	bool checkAntiDiagWin(const int colId, const int lastPlayer) const {
+		return	(board[colId][3] == lastPlayer && board[colId + 1][2] == lastPlayer && board[colId + 2][1] == lastPlayer && board[colId + 3][0] == lastPlayer) ||
+				(board[colId][4] == lastPlayer && board[colId + 1][3] == lastPlayer && board[colId + 2][2] == lastPlayer && board[colId + 3][1] == lastPlayer) ||
+				(board[colId][5] == lastPlayer && board[colId + 1][4] == lastPlayer && board[colId + 2][3] == lastPlayer && board[colId + 3][2] == lastPlayer);
 	}
 
 	static int randomDisc() {
